@@ -76,7 +76,7 @@ class RicartAgrawala:
         server_socket.listen(5)
         server_socket.settimeout(1.0)
 
-        logger.info(f"Listening on {host}:{port}")
+        logger.info(f"Listening on 0.0.0.0:{port}")
 
         while self.running:
             try:

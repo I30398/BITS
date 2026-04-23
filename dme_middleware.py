@@ -69,10 +69,10 @@ class RicartAgrawala:
 
     def _listen(self):
         """Listen for incoming messages from other nodes"""
-        host, port = self.node_config[self.node_id]
+        _, port = self.node_config[self.node_id]
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server_socket.bind((host, port))
+        server_socket.bind(('0.0.0.0', port))  # Listen on all interfaces
         server_socket.listen(5)
         server_socket.settimeout(1.0)
 

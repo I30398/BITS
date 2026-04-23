@@ -182,15 +182,21 @@ def main():
     node_id = sys.argv[1]
     user_name = sys.argv[2]
 
-    # Configuration for all nodes
-    # Adjust ports as needed
+    # ===========================================
+    # CONFIGURATION - UPDATE THESE IP ADDRESSES
+    # ===========================================
+    # Replace with actual IP addresses of your servers
+    SERVER_IP = '192.168.1.10'    # IP of file server machine
+    NODE1_IP = '192.168.1.11'     # IP of node1 machine
+    NODE2_IP = '192.168.1.12'     # IP of node2 machine
+
     node_config = {
-        'node1': ('localhost', 5001),  # DME port for node1
-        'node2': ('localhost', 5002),  # DME port for node2
+        'node1': (NODE1_IP, 5001),  # DME port for node1
+        'node2': (NODE2_IP, 5002),  # DME port for node2
     }
 
     # File server configuration
-    server_config = ('localhost', 5000)
+    server_config = (SERVER_IP, 5000)
 
     if node_id not in node_config:
         print(f"Error: Unknown node_id '{node_id}'")

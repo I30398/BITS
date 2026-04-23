@@ -127,7 +127,7 @@ class FileServer:
 if __name__ == "__main__":
     import sys
 
-    host = 'localhost'
+    host = '0.0.0.0'  # Listen on all interfaces
     port = 5000
 
     if len(sys.argv) > 1:

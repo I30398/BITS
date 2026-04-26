@@ -1,0 +1,68 @@
+================================================================================
+BOTH USERS POSTING MESSAGES - DME EXCHANGE
+================================================================================
+
+*** JOEL POSTS FIRST (clock=1) ***
+----------------------------------
+Joel> post Hello Lucy
+[22:44:20] [DME] Executing POST command: 'Hello Lucy'
+[Requesting write access...]
+[22:44:20] [DME] Requesting critical section for POST
+[22:44:20] [DME] === REQUESTING CS (clock=1) ===
+[22:44:20] [DME] Sending REQUEST to node1
+[22:44:20] [DME] Waiting for replies: 0/1
+[22:44:20] [DME] Received REPLY from node1
+[22:44:20] [DME] === ENTERED CRITICAL SECTION ===
+[22:44:20] [DME] In critical section - sending POST to server
+[Write access granted - posting message...]
+[Message posted successfully]
+[22:44:20] [DME] Releasing critical section
+[22:44:20] [DME] === RELEASED CRITICAL SECTION ===
+[22:44:20] [DME] Sending 0 deferred replies
+[Write access released]
+
+Joel> [22:45:19] [DME] Received REQUEST from node1 (clock=4)
+[22:45:19] [DME] Will send immediate REPLY to node1
+[22:45:19] [DME] Sending REPLY to node1
+
+
+*** LUCY POSTS SECOND (clock=4) ***
+-----------------------------------
+[22:44:20] [DME] Received REQUEST from node2 (clock=1)
+[22:44:20] [DME] Will send immediate REPLY to node2
+[22:44:20] [DME] Sending REPLY to node2
+
+Lucy> post Hello Joel
+[22:45:19] [DME] Executing POST command: 'Hello Joel'
+[Requesting write access...]
+[22:45:19] [DME] Requesting critical section for POST
+[22:45:19] [DME] === REQUESTING CS (clock=4) ===
+[22:45:19] [DME] Sending REQUEST to node2
+[22:45:19] [DME] Waiting for replies: 0/1
+[22:45:19] [DME] Received REPLY from node2
+[22:45:19] [DME] === ENTERED CRITICAL SECTION ===
+[22:45:19] [DME] In critical section - sending POST to server
+[Write access granted - posting message...]
+[Message posted successfully]
+[22:45:19] [DME] Releasing critical section
+[22:45:19] [DME] === RELEASED CRITICAL SECTION ===
+[22:45:19] [DME] Sending 0 deferred replies
+[Write access released]
+
+
+*** FILE SERVER - LOGS BOTH POSTS ***
+-------------------------------------
+[22:44:20] [SERVER] Received 'post' request from ('10.241.77.180', 46102)
+[22:44:20] [SERVER] Post: appended message from Joel
+[22:45:19] [SERVER] Received 'post' request from ('10.241.77.178', 35640)
+[22:45:19] [SERVER] Post: appended message from Lucy
+
+
+================================================================================
+SUMMARY:
+================================================================================
+- Joel posts at clock=1, Lucy replies immediately (not in CS)
+- Lucy posts at clock=4, Joel replies immediately (not in CS)
+- Each post goes through the full DME cycle
+- File server logs both post requests from different IPs
+- No contention in this example (0 deferred replies)

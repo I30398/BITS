@@ -1,0 +1,49 @@
+================================================================================
+JOEL POSTS A MESSAGE - DME IN ACTION
+================================================================================
+
+*** JOEL'S TERMINAL (NODE2) ***
+-------------------------------
+Joel> post Hello Lucy
+[22:44:20] [DME] Executing POST command: 'Hello Lucy'
+[Requesting write access...]
+[22:44:20] [DME] Requesting critical section for POST
+[22:44:20] [DME] === REQUESTING CS (clock=1) ===
+[22:44:20] [DME] Sending REQUEST to node1
+[22:44:20] [DME] Waiting for replies: 0/1
+[22:44:20] [DME] Received REPLY from node1
+[22:44:20] [DME] === ENTERED CRITICAL SECTION ===
+[22:44:20] [DME] In critical section - sending POST to server
+[Write access granted - posting message...]
+[Message posted successfully]
+[22:44:20] [DME] Releasing critical section
+[22:44:20] [DME] === RELEASED CRITICAL SECTION ===
+[22:44:20] [DME] Sending 0 deferred replies
+[Write access released]
+
+Joel>
+
+
+*** LUCY'S TERMINAL (NODE1) - Receives REQUEST and sends REPLY ***
+------------------------------------------------------------------
+[22:44:20] [DME] Received REQUEST from node2 (clock=1)
+[22:44:20] [DME] Will send immediate REPLY to node2
+[22:44:20] [DME] Sending REPLY to node2
+
+
+*** FILE SERVER ***
+-------------------
+[22:44:20] [SERVER] Received 'post' request from ('10.241.77.180', 46102)
+[22:44:20] [SERVER] Post: appended message from Joel
+
+
+================================================================================
+DME FLOW EXPLANATION:
+================================================================================
+1. [DME] === REQUESTING CS (clock=1) ===    -> Joel requests critical section
+2. [DME] Sending REQUEST to node1           -> REQUEST sent to Lucy
+3. [DME] Waiting for replies: 0/1           -> Waiting for Lucy's reply
+4. [DME] Received REPLY from node1          -> Lucy grants permission
+5. [DME] === ENTERED CRITICAL SECTION ===   -> Joel enters CS
+6. [DME] In critical section - sending POST -> Message posted to server
+7. [DME] === RELEASED CRITICAL SECTION ===  -> Joel releases CS

@@ -1,0 +1,21 @@
+================================================================================
+NODE2 (JOEL) CLIENT STARTED
+================================================================================
+
+yadava@sjo-sv-integ13{} Node2 >python3 chat_client.py node2 Joel
+[22:40:06] [DME] Initializing DME middleware for node2
+[22:40:06] [DME] Node node2 initialized. Other nodes: ['node1']
+
+==================================================
+CHAT ROOM CLIENT - Joel
+==================================================
+Node ID: node2
+Server: 10.241.113.29:5000
+
+Commands:
+  view              - View all messages
+  post <message>    - Post a new message
+  exit              - Exit the application
+==================================================
+
+Joel> [22:40:06] [DME] Listening on 0.0.0.0:5002

@@ -1,0 +1,21 @@
+================================================================================
+NODE1 (LUCY) CLIENT STARTED
+================================================================================
+
+yadava@sjo-sv-integ13{}Node1 >python3 chat_client.py node1 Lucy
+[22:40:20] [DME] Initializing DME middleware for node1
+[22:40:20] [DME] Node node1 initialized. Other nodes: ['node2']
+
+==================================================
+CHAT ROOM CLIENT - Lucy
+==================================================
+Node ID: node1
+Server: 10.241.113.29:5000
+
+Commands:
+  view              - View all messages
+  post <message>    - Post a new message
+  exit              - Exit the application
+==================================================
+
+Lucy> [22:40:20] [DME] Listening on 0.0.0.0:5001

@@ -1,0 +1,45 @@
+================================================================================
+VIEW COMMAND - CHAT HISTORY
+================================================================================
+
+*** LUCY RUNS VIEW COMMAND ***
+------------------------------
+Lucy> view
+
+----------------------------------------
+20 Apr 10:24PM Joel: ajeet
+20 Apr 10:24PM Lucy: node2
+22 Apr 10:04PM Lucy: hello Joel
+22 Apr 10:05PM Joel: hello lucy
+22 Apr 10:06PM Lucy: How are you Joel
+22 Apr 10:06PM Joel: I am file Lucy, how are you
+22 Apr 10:12PM Joel: Hi Lucy
+22 Apr 10:12PM Lucy: Hi Joel
+23 Apr 02:17AM Joel: sjo-sv-integ13
+23 Apr 02:17AM Lucy: sjo-sv-integ11
+23 Apr 02:22AM Joel: HI from sjo-sv-integ13
+23 Apr 02:22AM Lucy: Hi from sjo-sv-integ11
+23 Apr 07:20AM Joel: Goodmorning Lucy
+23 Apr 07:21AM Joel: how are you doing
+23 Apr 08:28AM Joel: Hello Lucy
+23 Apr 09:48AM Lucy: Hi Joel
+25 Apr 10:44PM Joel: Hello Lucy
+25 Apr 10:45PM Lucy: Hello Joel
+----------------------------------------
+
+Lucy>
+
+
+*** FILE SERVER - LOGS VIEW REQUEST ***
+---------------------------------------
+[22:46:05] [SERVER] Received 'view' request from ('10.241.77.178', 35794)
+[22:46:05] [SERVER] View: returning 625 bytes
+
+
+================================================================================
+NOTES:
+================================================================================
+- View command does NOT require DME lock (multiple readers allowed)
+- Shows all messages with timestamp, username, and content
+- Format: DD Mon HH:MMAM/PM Username: Message
+- File server returns full chat history (625 bytes in this case)

@@ -256,3 +256,114 @@ To verify DME is working correctly:
 | Waiting for replies forever | Ensure all client nodes are running |
 | Permission denied on port | Use port > 1024 or run with sudo |
 | Firewall blocking | Open required ports or disable firewall |
+
+---
+
+## Usage Screenshots
+
+### 1. File Server Started
+![File Server](screenshots/file_server_started.png)
+
+File server running on `sjo-sv-integ18`, listening on `0.0.0.0:5000` and managing `chat_messages.txt`.
+
+---
+
+### 2. Node2 (Joel) Client Started
+![Node2 Started](screenshots/node2_started.png)
+
+Joel's client initialized on `sjo-sv-integ13` as `node2`, connected to file server at `10.241.113.29:5000`, DME listening on port `5002`.
+
+---
+
+### 3. Node1 (Lucy) Client Started
+![Node1 Started](screenshots/node1_started.png)
+
+Lucy's client initialized on `sjo-sv-integ13` as `node1`, connected to file server at `10.241.113.29:5000`, DME listening on port `5001`.
+
+---
+
+### 4. Joel Posts a Message - DME in Action
+![Joel Posts](screenshots/joel_posts.png)
+
+**DME Flow when Joel posts "Hello Lucy":**
+1. `[DME] === REQUESTING CS (clock=1) ===` - Joel requests critical section
+2. `[DME] Sending REQUEST to node1` - REQUEST sent to Lucy
+3. `[DME] Waiting for replies: 0/1` - Waiting for Lucy's reply
+4. `[DME] Received REPLY from node1` - Lucy grants permission
+5. `[DME] === ENTERED CRITICAL SECTION ===` - Joel enters CS
+6. `[DME] In critical section - sending POST to server` - Message posted
+7. `[DME] === RELEASED CRITICAL SECTION ===` - Joel releases CS
+
+**On Lucy's side:**
+- `[DME] Received REQUEST from node2 (clock=1)` - Receives Joel's request
+- `[DME] Will send immediate REPLY to node2` - Lucy is not requesting, so replies immediately
+- `[DME] Sending REPLY to node2` - Permission granted
+
+**On File Server:**
+- `[SERVER] Received 'post' request from ('10.241.77.180', 46102)`
+- `[SERVER] Post: appended message from Joel`
+
+---
+
+### 5. Both Users Posting Messages
+![Both Posting](screenshots/both_posting.png)
+
+**Sequential posts demonstrating DME:**
+- Joel posts at `clock=1`, Lucy replies immediately
+- Lucy posts at `clock=4`, Joel replies immediately
+- Each post goes through the full DME cycle
+- File server logs both post requests from different IPs
+
+---
+
+### 6. View Command - Chat History
+![View Messages](screenshots/view_messages.png)
+
+**Lucy runs `view` command showing full chat history:**
+```
+20 Apr 10:24PM Joel: ajeet
+20 Apr 10:24PM Lucy: node2
+22 Apr 10:04PM Lucy: hello Joel
+22 Apr 10:05PM Joel: hello lucy
+22 Apr 10:06PM Lucy: How are you Joel
+22 Apr 10:06PM Joel: I am file Lucy, how are you
+22 Apr 10:12PM Joel: Hi Lucy
+22 Apr 10:12PM Lucy: Hi Joel
+23 Apr 02:17AM Joel: sjo-sv-integ13
+23 Apr 02:17AM Lucy: sjo-sv-integ11
+23 Apr 02:22AM Joel: HI from sjo-sv-integ13
+23 Apr 02:22AM Lucy: Hi from sjo-sv-integ11
+23 Apr 07:20AM Joel: Goodmorning Lucy
+23 Apr 07:21AM Joel: how are you doing
+23 Apr 08:28AM Joel: Hello Lucy
+23 Apr 09:48AM Lucy: Hi Joel
+25 Apr 10:44PM Joel: Hello Lucy
+25 Apr 10:45PM Lucy: Hello Joel
+```
+
+**File Server logs:**
+- `[SERVER] Received 'view' request from ('10.241.77.178', 35794)`
+- `[SERVER] View: returning 625 bytes`
+
+---
+
+## DME Algorithm Demonstrated
+
+The screenshots show the Ricart-Agrawala algorithm working:
+
+| Step | Node | Action | Log Evidence |
+|------|------|--------|--------------|
+| 1 | Joel | Request CS | `=== REQUESTING CS (clock=1) ===` |
+| 2 | Joel | Send REQUEST | `Sending REQUEST to node1` |
+| 3 | Lucy | Receive REQUEST | `Received REQUEST from node2 (clock=1)` |
+| 4 | Lucy | Send REPLY (not in CS) | `Sending REPLY to node2` |
+| 5 | Joel | Receive REPLY | `Received REPLY from node1` |
+| 6 | Joel | Enter CS | `=== ENTERED CRITICAL SECTION ===` |
+| 7 | Joel | Post message | `In critical section - sending POST` |
+| 8 | Joel | Exit CS | `=== RELEASED CRITICAL SECTION ===` |
+
+**Key observations:**
+- Only one node in critical section at a time
+- Nodes exchange REQUEST/REPLY messages
+- Lamport clock increments with each operation
+- Deferred replies = 0 (no contention in these examples)

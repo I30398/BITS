@@ -262,28 +262,111 @@ To verify DME is working correctly:
 ## Usage Screenshots
 
 ### 1. File Server Started
-![File Server](screenshots/file_server_started.png)
+
+```
+yadava@sjo-sv-integ18{} Fileserver >python3 file_server.py
+[22:39:48] [SERVER] File Server started on 0.0.0.0:5000
+[22:39:48] [SERVER] Shared file: chat_messages.txt
+
+==================================================
+CHAT ROOM FILE SERVER
+==================================================
+Host: 0.0.0.0:5000
+File: chat_messages.txt
+Press Ctrl+C to stop
+==================================================
+```
 
 File server running on `sjo-sv-integ18`, listening on `0.0.0.0:5000` and managing `chat_messages.txt`.
 
 ---
 
 ### 2. Node2 (Joel) Client Started
-![Node2 Started](screenshots/node2_started.png)
+
+```
+yadava@sjo-sv-integ13{} Node2 >python3 chat_client.py node2 Joel
+[22:40:06] [DME] Initializing DME middleware for node2
+[22:40:06] [DME] Node node2 initialized. Other nodes: ['node1']
+
+==================================================
+CHAT ROOM CLIENT - Joel
+==================================================
+Node ID: node2
+Server: 10.241.113.29:5000
+
+Commands:
+  view              - View all messages
+  post <message>    - Post a new message
+  exit              - Exit the application
+==================================================
+
+Joel> [22:40:06] [DME] Listening on 0.0.0.0:5002
+```
 
 Joel's client initialized on `sjo-sv-integ13` as `node2`, connected to file server at `10.241.113.29:5000`, DME listening on port `5002`.
 
 ---
 
 ### 3. Node1 (Lucy) Client Started
-![Node1 Started](screenshots/node1_started.png)
+
+```
+yadava@sjo-sv-integ13{}Node1 >python3 chat_client.py node1 Lucy
+[22:40:20] [DME] Initializing DME middleware for node1
+[22:40:20] [DME] Node node1 initialized. Other nodes: ['node2']
+
+==================================================
+CHAT ROOM CLIENT - Lucy
+==================================================
+Node ID: node1
+Server: 10.241.113.29:5000
+
+Commands:
+  view              - View all messages
+  post <message>    - Post a new message
+  exit              - Exit the application
+==================================================
+
+Lucy> [22:40:20] [DME] Listening on 0.0.0.0:5001
+```
 
 Lucy's client initialized on `sjo-sv-integ13` as `node1`, connected to file server at `10.241.113.29:5000`, DME listening on port `5001`.
 
 ---
 
 ### 4. Joel Posts a Message - DME in Action
-![Joel Posts](screenshots/joel_posts.png)
+
+**Joel's Terminal (Node2):**
+```
+Joel> post Hello Lucy
+[22:44:20] [DME] Executing POST command: 'Hello Lucy'
+[Requesting write access...]
+[22:44:20] [DME] Requesting critical section for POST
+[22:44:20] [DME] === REQUESTING CS (clock=1) ===
+[22:44:20] [DME] Sending REQUEST to node1
+[22:44:20] [DME] Waiting for replies: 0/1
+[22:44:20] [DME] Received REPLY from node1
+[22:44:20] [DME] === ENTERED CRITICAL SECTION ===
+[22:44:20] [DME] In critical section - sending POST to server
+[Write access granted - posting message...]
+[Message posted successfully]
+[22:44:20] [DME] Releasing critical section
+[22:44:20] [DME] === RELEASED CRITICAL SECTION ===
+[22:44:20] [DME] Sending 0 deferred replies
+[Write access released]
+```
+
+**Lucy's Terminal (Node1) - Receives REQUEST and sends REPLY:**
+```
+[22:44:20] [DME] Received REQUEST from node2 (clock=1)
+[22:44:20] [DME] Will send immediate REPLY to node2
+[22:44:20] [DME] Sending REPLY to node2
+```
+
+**File Server - Receives POST:**
+```
+[22:44:20] [SERVER] Received 'post' request from ('10.241.77.180', 46102)
+[22:44:20] [SERVER] Post: appended message from Joel
+```
 
 **DME Flow when Joel posts "Hello Lucy":**
 1. `[DME] === REQUESTING CS (clock=1) ===` - Joel requests critical section
@@ -306,7 +389,41 @@ Lucy's client initialized on `sjo-sv-integ13` as `node1`, connected to file serv
 ---
 
 ### 5. Both Users Posting Messages
-![Both Posting](screenshots/both_posting.png)
+
+**Lucy posts after Joel - DME exchange:**
+```
+Lucy> post Hello Joel
+[22:45:19] [DME] Executing POST command: 'Hello Joel'
+[Requesting write access...]
+[22:45:19] [DME] Requesting critical section for POST
+[22:45:19] [DME] === REQUESTING CS (clock=4) ===
+[22:45:19] [DME] Sending REQUEST to node2
+[22:45:19] [DME] Waiting for replies: 0/1
+[22:45:19] [DME] Received REPLY from node2
+[22:45:19] [DME] === ENTERED CRITICAL SECTION ===
+[22:45:19] [DME] In critical section - sending POST to server
+[Write access granted - posting message...]
+[Message posted successfully]
+[22:45:19] [DME] Releasing critical section
+[22:45:19] [DME] === RELEASED CRITICAL SECTION ===
+[22:45:19] [DME] Sending 0 deferred replies
+[Write access released]
+```
+
+**Joel's terminal - receives Lucy's REQUEST:**
+```
+Joel> [22:45:19] [DME] Received REQUEST from node1 (clock=4)
+[22:45:19] [DME] Will send immediate REPLY to node1
+[22:45:19] [DME] Sending REPLY to node1
+```
+
+**File Server logs both posts:**
+```
+[22:44:20] [SERVER] Received 'post' request from ('10.241.77.180', 46102)
+[22:44:20] [SERVER] Post: appended message from Joel
+[22:45:19] [SERVER] Received 'post' request from ('10.241.77.178', 35640)
+[22:45:19] [SERVER] Post: appended message from Lucy
+```
 
 **Sequential posts demonstrating DME:**
 - Joel posts at `clock=1`, Lucy replies immediately
@@ -317,9 +434,40 @@ Lucy's client initialized on `sjo-sv-integ13` as `node1`, connected to file serv
 ---
 
 ### 6. View Command - Chat History
-![View Messages](screenshots/view_messages.png)
 
-**Lucy runs `view` command showing full chat history:**
+**Lucy runs `view` command:**
+```
+Lucy> view
+
+----------------------------------------
+20 Apr 10:24PM Joel: ajeet
+20 Apr 10:24PM Lucy: node2
+22 Apr 10:04PM Lucy: hello Joel
+22 Apr 10:05PM Joel: hello lucy
+22 Apr 10:06PM Lucy: How are you Joel
+22 Apr 10:06PM Joel: I am file Lucy, how are you
+22 Apr 10:12PM Joel: Hi Lucy
+22 Apr 10:12PM Lucy: Hi Joel
+23 Apr 02:17AM Joel: sjo-sv-integ13
+23 Apr 02:17AM Lucy: sjo-sv-integ11
+23 Apr 02:22AM Joel: HI from sjo-sv-integ13
+23 Apr 02:22AM Lucy: Hi from sjo-sv-integ11
+23 Apr 07:20AM Joel: Goodmorning Lucy
+23 Apr 07:21AM Joel: how are you doing
+23 Apr 08:28AM Joel: Hello Lucy
+23 Apr 09:48AM Lucy: Hi Joel
+25 Apr 10:44PM Joel: Hello Lucy
+25 Apr 10:45PM Lucy: Hello Joel
+----------------------------------------
+```
+
+**File Server logs view request:**
+```
+[22:46:05] [SERVER] Received 'view' request from ('10.241.77.178', 35794)
+[22:46:05] [SERVER] View: returning 625 bytes
+```
+
+**Full chat history displayed:**
 ```
 20 Apr 10:24PM Joel: ajeet
 20 Apr 10:24PM Lucy: node2
